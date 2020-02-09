@@ -28,6 +28,8 @@ var CurrentGeneration = [
 
 ];
 
+var Paused = false;
+
 // ===== ===== ON INIT ===== =====
 $(document).ready(() => {
     CVS = document.getElementById('cvs');
@@ -35,6 +37,7 @@ $(document).ready(() => {
     loadRuleControll();
     CurrentGeneration = getRandomState();
     startTheGame();
+    showRuleNumber();
 });
 
 // ===== ===== game logic ===== =====
@@ -58,6 +61,7 @@ function loadRuleControll() {
 function changeRule(thisElement, index) {
     Rule[index][1] = Rule[index][1] == 1 ? 0 : 1;
     thisElement.className = `clickable cell-span ${Rule[index][1] == 1 ? 'black' : 'white'}`;
+    showRuleNumber();
 }
 
 function getRandomState() {
@@ -68,8 +72,10 @@ function getRandomState() {
 
 function startTheGame() {
     setInterval(() => {
-        nextGeneration();
-        drawState();
+        if(!Paused) {
+            nextGeneration();
+            drawState();
+        }
     }, 50);
 }
 
@@ -121,6 +127,26 @@ function drawState() {
     }
 }
 
+function showRuleNumber() {
+    let rn = 0;
+    Rule.forEach((e, i) => {
+        if(e[1] == 1) {
+            rn += Math.pow(2, i);
+        }
+    });
+    $('#rule-number-div').html(rn);
+}
+
+function togglePause() {
+    Paused = !Paused;
+    $('#pause-button').html(Paused ? 'UNPAUSE' : 'PAUSE');
+}
+
+function restart() {
+    CTX.clearRect(0, 0, 500, 650)
+    History = [];
+    CurrentGeneration = getRandomState();
+}
 
 // ===== ===== util ===== =====
 function times(n, f){
@@ -140,3 +166,5 @@ function arraysEqual(a1, a2) {
     }
     return true;
 }
+
+
